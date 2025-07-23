@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.scss">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+</head>
+<body>
+    <section>
+        <div class="fixed-bg"></div>
+        <div class="year-container">
+            <img src="./assets/year-1969.svg" alt="year">
+        </div>
+        <ul class="timeline">
+            <div class="wheels">
+                <div class="image-container" data-section="0">
+                    <img src="./assets/1999.png" alt="1999 Technology">
+                </div>
+                <div class="image-container" data-section="1">
+                    <img src="./assets/2000.png" alt="2000s Technology">
+                </div>
+                <div class="image-container" data-section="2">
+                    <img src="./assets/1999.png" alt="Modern Technology">
+                </div>
+                <div class="image-container" data-section="3">
+                    <img src="./assets/2000.png" alt="Modern Technology">
+                </div>
+                <div class="image-container" data-section="4">
+                    <img src="./assets/1999.png" alt="Modern Technology">
+                </div>
+            </div>
+            
+            <div class="fragment">
+                <div class="text" id="timeline-text">
+                    <p class="title">Arrival of Mainframe Computing in Singapore: Introducing the IBM System</p>
+                    <p class="description">
+                        Singapore entered the digital age with high capacity computing for government and enterprise.
+                    </p>
+                </div>
+            </div>
+        </ul>
+    </section>
+    <script>
+        const titleContent = [
+            
+        ]
+
+        // Content for each section
+        const timelineContent = [
+            {
+                title: "Arrival of Mainframe Computing in Singapore: Introducing the IBM System",
+                description: "Singapore entered the digital age with high capacity computing for government and enterprise."
+            },
+            {
+                title: "COMEX Launches in Singapore",
+                description: "One of Asia's earliest consumer tech shows debuts bringing personal computers and electronics to the public."
+            },
+            {
+                title: "Launch of NETS",
+                description: "E-payments begin in retail, laying groundwork for Singapore’s cashless future and influencing the tech products showcased at COMEX."
+            },
+            {
+                title: "Launch of the Computer Appreciation Programme (CAP)",
+                description: "Nation-wide computer literacy education for students begins."
+            },
+            {
+                title: "Internet made public in Singapore",
+                description: "Singtel launched SingNet, the country's first commercial internet service provider, offering public dial-up access and email services for the first time. COMEX begins showcasing modems, ISPs, and early internet services to curious consumers."
+            }
+        ];
+
+        const yearContent = ['year-1969', 'year-1983', 'year-1985', 'year-1987', 'year-1994']
+
+        let currentSection = 0;
+        const textElement = document.getElementById('timeline-text');
+        const timeline = document.querySelector('.timeline');
+        const yearContainer = document.querySelector('.year-container');
+
+        // Function to update text content with GSAP
+        function updateContent(sectionIndex) {
+            if (sectionIndex !== currentSection && timelineContent[sectionIndex]) {
+
+                console.log("currentSection" , currentSection);
+                console.log("sectionIndex" , sectionIndex);
+
+                // Determine scroll direction and set initial rotation
+                const isScrollingUp = sectionIndex < currentSection;
+                const startRotation = isScrollingUp ? -90 : 90;
+                
+                gsap.fromTo(yearContainer, {
+                    rotation: startRotation
+                }, {
+                    rotation: 0,
+                    duration: 0.5,
+                    ease: "power2.out"
+                });
+
+                const img = yearContainer.querySelector('img');
+                img.src = `./assets/${yearContent[sectionIndex]}.svg`;
+
+                currentSection = sectionIndex;
+
+                // GSAP fade out animation
+                gsap.to(textElement, {
+                    opacity: 0,
+                    duration: 0.5,
+                    // ease: "power2.out",
+                    onComplete: () => {
+                        // Update content
+                        textElement.querySelector('.title').textContent = timelineContent[sectionIndex].title;
+                        textElement.querySelector('.description').textContent = timelineContent[sectionIndex].description;
+
+                        const img = document.querySelector('.image-container');
+
+                        
+                        // GSAP fade in animation
+                        gsap.to(textElement, {
+                            opacity: 1,
+                            duration: 0.5,
+                            ease: "power2.out"
+                        });
+                    }
+                });
+
+
+                
+            }
+        }
+
+        // Scroll event listener for content updates
+        timeline.addEventListener('scroll', () => {
+            const scrollTop = timeline.scrollTop;
+            const sectionHeight = window.innerHeight;
+            const sectionIndex = Math.round(scrollTop / sectionHeight);
+            
+            updateContent(sectionIndex);
+        });
+
+        // Initialize first section with GSAP
+        gsap.set(textElement, { opacity: 0 , duration: 0.5});
+        gsap.to(textElement, {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+            delay: 0.5
+        });
+
+        // Optional: Add keyboard navigation with GSAP smooth scrolling
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' && currentSection < timelineContent.length - 1) {
+                gsap.to(timeline, {
+                    scrollTo: { y: (currentSection + 1) * window.innerHeight },
+                    duration: 0.8,
+                    ease: "power2.inOut"
+                });
+            } else if (e.key === 'ArrowUp' && currentSection > 0) {
+                gsap.to(timeline, {
+                    scrollTo: { y: (currentSection - 1) * window.innerHeight },
+                    duration: 0.8,
+                    ease: "power2.inOut"
+                });
+            }
+        });
+    </script>
+</body>
+</html>
